@@ -12,7 +12,10 @@ jobs:
       contents: write
 
     env:
-      OPTIONS: username=${{ github.repository_owner }}&rank_icon=github&show_icons=true&theme=shadow_green&hide=stars&show=prs_merged&custom_title=KindOfNerdy's GitHub Stats
+      OPTIONS: username=${{ github.repository_owner }}&show_icons=true&theme=shadow_green&hide=stars&show=prs_merged&custom_title=KindOfNerdy's GitHub Stats
+      DARK: title_color=7cda24&icon_color=7cda24&text_color=c8f6c0&border_color=56a118&ring_color=7cda24
+      # The rank letter is shown in the ring from this rank upwards, below it the GitHub logo.
+      SHOW_RANK_FROM: B+
 
     steps:
       - uses: actions/checkout@v6
@@ -21,12 +24,43 @@ jobs:
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: ${{ env.OPTIONS }}&title_color=7cda24&icon_color=7cda24&text_color=c8f6c0&border_color=56a118&ring_color=7cda24
+          options: ${{ env.OPTIONS }}&${{ env.DARK }}&rank_icon=github
           path: profile/stats-dark.svg
           token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_error: true
 
       - name: Stats card (light)
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: stats
+          options: ${{ env.OPTIONS }}&rank_icon=github
+          path: profile/stats-light.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_error: true
+
+      - name: Check rank
+        id: rank
+        run: |
+          ranks="S A+ A A- B+ B B- C+ C"
+          rank=$(grep -oE 'Rank: [A-Z][+-]?' profile/stats-dark.svg | head -1 | cut -d' ' -f2)
+          pos() { echo "$ranks" | tr ' ' '\n' | grep -nxF -- "$1" | cut -d: -f1; }
+          echo "Rank: ${rank:-unknown} (shown from $SHOW_RANK_FROM)"
+          if [ -n "$rank" ] && [ "$(pos "$rank")" -le "$(pos "$SHOW_RANK_FROM")" ]; then
+            echo "show=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stats card with rank (dark)
+        if: steps.rank.outputs.show == 'true'
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: stats
+          options: ${{ env.OPTIONS }}&${{ env.DARK }}
+          path: profile/stats-dark.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_error: true
+
+      - name: Stats card with rank (light)
+        if: steps.rank.outputs.show == 'true'
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
