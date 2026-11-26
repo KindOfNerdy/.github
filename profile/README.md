@@ -1,8 +1,10 @@
 ### Hi, I'm KindOfNerdy 👋
 
-Home Assistant tinkerer and self-hoster. I make the devices in my home work
-with Home Assistant and send the device support back upstream, so others get
-it too. I like simple solutions that just work.
+Home Assistant tinkerer and self-hoster. I make everyday devices work with
+Home Assistant (coffee machines, smart mugs, air fryers, dishwashers, smart
+scales, TV streaming) and send the support back upstream, so others get it
+too. Usually that means a PR to the library underneath and a card for the
+dashboard on top. I like simple solutions that just work.
 
 ![Home Assistant](https://img.shields.io/badge/Home_Assistant-18BCF2?style=for-the-badge&logo=homeassistant&logoColor=white)
 ![HACS](https://img.shields.io/badge/HACS-41BDF5?style=for-the-badge&logo=homeassistantcommunitystore&logoColor=white)
