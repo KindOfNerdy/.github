@@ -18,8 +18,8 @@ dashboard on top. I like simple solutions that just work.
 ![Git](https://img.shields.io/badge/Git-F05033?style=for-the-badge&logo=git&logoColor=white)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./stats-dark.svg">
-  <img alt="KindOfNerdy's GitHub stats" src="./stats-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/KindOfNerdy/.github/main/profile/stats-dark.svg">
+  <img alt="KindOfNerdy's GitHub stats" src="https://raw.githubusercontent.com/KindOfNerdy/.github/main/profile/stats-light.svg">
 </picture>
 
 ☕ [Ko-fi](https://ko-fi.com/kindofnerdy)
