@@ -12,19 +12,29 @@ jobs:
       contents: write
 
     env:
-      OPTIONS: username=${{ github.repository_owner }}&show_icons=true&theme=shadow_green&hide=stars&show=prs_merged&custom_title=KindOfNerdy's GitHub Stats
+      OPTIONS: username=${{ github.repository_owner }}&show_icons=true&theme=shadow_green&show=prs_merged&custom_title=KindOfNerdy's GitHub Stats
       DARK: title_color=7cda24&icon_color=7cda24&text_color=c8f6c0&border_color=56a118&ring_color=7cda24
       # The rank letter is shown in the ring from this rank upwards, below it the GitHub logo.
       SHOW_RANK_FROM: B+
+      # The stars line is shown from this many stars (on own repos) upwards.
+      SHOW_STARS_FROM: 25
 
     steps:
       - uses: actions/checkout@v6
+
+      - name: Check stars
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          stars=$(gh api --paginate "users/${{ github.repository_owner }}/repos?type=owner&per_page=100" --jq '.[] | select(.fork | not) | .stargazers_count' | awk '{s+=$1} END {print s+0}')
+          echo "Stars: $stars (shown from $SHOW_STARS_FROM)"
+          if [ "$stars" -ge "$SHOW_STARS_FROM" ]; then echo "HIDE=" >> "$GITHUB_ENV"; else echo "HIDE=stars" >> "$GITHUB_ENV"; fi
 
       - name: Stats card (dark)
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: ${{ env.OPTIONS }}&${{ env.DARK }}&rank_icon=github
+          options: ${{ env.OPTIONS }}&hide=${{ env.HIDE }}&${{ env.DARK }}&rank_icon=github
           path: profile/stats-dark.svg
           token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_error: true
@@ -33,7 +43,7 @@ jobs:
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: ${{ env.OPTIONS }}&rank_icon=github
+          options: ${{ env.OPTIONS }}&hide=${{ env.HIDE }}&rank_icon=github
           path: profile/stats-light.svg
           token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_error: true
@@ -54,7 +64,7 @@ jobs:
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: ${{ env.OPTIONS }}&${{ env.DARK }}
+          options: ${{ env.OPTIONS }}&hide=${{ env.HIDE }}&${{ env.DARK }}
           path: profile/stats-dark.svg
           token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_error: true
@@ -64,7 +74,7 @@ jobs:
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: ${{ env.OPTIONS }}
+          options: ${{ env.OPTIONS }}&hide=${{ env.HIDE }}
           path: profile/stats-light.svg
           token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_error: true
